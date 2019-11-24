@@ -123,14 +123,16 @@ function createSettingsFile(answers) {
 
   if (answers.useSubdomain) {
     console.log('To enable subdomain run these commands in order: ');
-    console.log(`sudo mv ${fileName} /etc/nginx/sites-available/`);
-    console.log(`sudo ln -s /etc/nginx/sites-available/${answers.subdomain} /etc/nginx/sites-enabled/${answers.subdomain}`);
-    console.log(`sudo service nginx restart`);
+    console.log('sudo su -');
+    console.log(`mv ${fileName} /etc/nginx/sites-available/`);
+    console.log(`ln -s /etc/nginx/sites-available/${answers.subdomain} /etc/nginx/sites-enabled/${answers.subdomain}`);
+    console.log(`service nginx restart`);
   } else {
-    console.log(`To enable web site on folder ${answers.appFolder} run these commands in order: `);
-    console.log(`sudo mv ${fileName} /etc/nginx/conf.d/`);
-    console.log(`sudo echo '/etc/nginx/conf.d/${answers.appName}.config' >> /etc/nginx/conf.d/apps.conf`);
-    console.log(`sudo service nginx restart`);
+    console.log(`To enable web site on folder ${answers.targetDir} run these commands in order: `);
+    console.log('sudo su -');
+    console.log(`mv ${fileName} /etc/nginx/conf.d/`);
+    console.log(`echo 'include /etc/nginx/conf.d/${answers.appName}.config;' >> /etc/nginx/conf.d/apps.config`);
+    console.log(`service nginx restart`);
   }
 }
 
