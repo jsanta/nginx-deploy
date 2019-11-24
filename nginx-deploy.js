@@ -88,18 +88,18 @@ const questions = [{
 function writeFileSyncRecursive(filename, content, charset) {
   charset = (!charset) ? 'utf8' : charset;
   let folders = filename.split(path.sep).slice(0, -1);
-  folders = folders.filter(f => f.trim() !== '');
+  folders[0] = (folders[0] === '') ? '/' : folders[0];
   if (folders.length) {
     // create folder path if it doesn't exist
     folders.reduce((last, folder) => {
       const folderPath = last ? last + path.sep + folder : folder
       if (!fs.existsSync(folderPath)) {
-        fs.mkdirSync(folderPath)
+        fs.mkdirSync(folderPath);
       }
       return folderPath
     })
   }
-  fs.writeFileSync(filename, content, charset);
+  fs.writeFileSync(filename, content, { encoding: charset, mode: 0o744, flag: 'w' });
 }
 
 function createSettingsFile(answers) {
@@ -149,13 +149,3 @@ program
   });
 
 program.parse(process.argv);
-let checker = (arr, target) => target.every(v => arr.includes(v));
-function checkArgs(args) {
-  let result = true;
-  result = checker(Object.keys(program._events), args);
-
-  return result;
-}
-if(program.args.length === 0 || !checkArgs(program.args)){
-  program.help();
-}
