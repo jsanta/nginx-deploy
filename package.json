@@ -1,0 +1,36 @@
+{
+  "name": "nginx-deploy",
+  "version": "1.0.0",
+  "description": "Command line utility for deploying node apps in nginx servers.",
+  "main": "index.js",
+  "preferGlobal": true,
+  "bin": "./nginx-deploy.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "github"
+  },
+  "keywords": [
+    "command",
+    "line",
+    "deploy",
+    "nginx",
+    "wizard",
+    "node",
+    "nodejs",
+    "utility",
+    "pm2",
+    "daemon",
+    "web"
+  ],
+  "author": "Jose Ignacio Santa Cruz <j@santa.cl>",
+  "license": "ISC",
+  "dependencies": {
+    "commander": "^4.0.1",
+    "handlebars": "^4.5.3",
+    "inquirer": "^7.0.0",
+    "lodash": "^4.17.15"
+  }
+}

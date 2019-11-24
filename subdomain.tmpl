@@ -1,0 +1,61 @@
+map $sent_http_content_type $expires {
+    default                    off;
+    text/html                  epoch;
+    text/css                   max;
+    application/javascript     max;
+    ~image/                    max;
+}
+
+server {
+
+	root <%= appFolder %>;
+
+	index index.html index.htm;
+
+	server_name <%= subdomain %>;
+
+	location / {
+		expires $expires;
+        try_files $uri$args $uri$args/ @<%= appName %>;
+        access_log /var/log/nginx/<%= appName %>.access.log;
+        error_log /var/log/nginx/<%= appName %>.error.log;
+	}
+
+    location @<%= appName %> {
+        if ($request_method = OPTIONS) {
+            add_header Access-Control-Allow-Origin $http_origin;
+            add_header Access-Control-Allow-Methods "GET, POST, DELETE, PUT, OPTIONS";
+            add_header Access-Control-Allow-Headers "Authorization, Origin, X-Requested-With, Content-Type, Accept, Access-Control-Allow-Origin";
+            add_header Access-Control-Allow-Credentials "true";
+            add_header Content-Length 0;
+            add_header Content-Type text / plain;
+            return 200;
+        }
+
+        rewrite ^/(.*) $1 break;
+        proxy_pass http://<%= targetServer %>:<%= targetPort %>;
+        proxy_buffering on;
+
+        proxy_http_version 1.1;
+        proxy_set_header Access-Control-Allow-Origin * ;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_set_header Host $host;
+    }
+
+    listen [::]:443; # not managed by Certbotv
+    ssl on; # not managed by Certbot
+    listen 443 ssl; # managed by Certbot
+
+    ## Please double check your certificate paths
+    ssl_certificate /etc/letsencrypt/live/kinetik.cl/fullchain.pem; # managed by Certbot
+    ssl_certificate_key /etc/letsencrypt/live/kinetik.cl/privkey.pem; # managed by Certbot
+    include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot
+}
+
+server {
+    if ($host = <%= subdomain %>) {
+        return 301 https://$host$request_uri;
+    } # managed by Certbot
+ %>

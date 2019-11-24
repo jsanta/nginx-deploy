@@ -1,0 +1,27 @@
+location /<%= targetDir %> {
+    try_files $uri$args $uri$args/ @<%= appName %>;
+    access_log /var/log/nginx/<%= appName %>.access.log;
+    error_log /var/log/nginx/<%= appName %>.error.log;
+}
+
+location @<%= appName %> {
+    if ($request_method = OPTIONS) {
+        add_header Access-Control-Allow-Origin $http_origin;
+        add_header Access-Control-Allow-Methods "GET, POST, DELETE, PUT, OPTIONS";
+        add_header Access-Control-Allow-Headers "Authorization, Origin, X-Requested-With, Content-Type, Accept, Access-Control-Allow-Origin";
+        add_header Access-Control-Allow-Credentials "true";
+        add_header Content-Length 0;
+        add_header Content-Type text / plain;
+        return 200;
+    }
+
+    rewrite ^/<%= targetDir %>(.*) $1 break;
+    proxy_pass http://<%= targetServer %>:<%= targetPort %>;
+    proxy_buffering on;
+
+    proxy_http_version 1.1;
+    proxy_set_header Access-Control-Allow-Origin * ;
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection "upgrade";
+    proxy_set_header Host $host;
+}
